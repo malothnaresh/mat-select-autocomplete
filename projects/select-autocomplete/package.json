@@ -1,0 +1,13 @@
+{
+  "name": "mat-select-autocomplete",
+  "version": "1.0.1",
+  "description": "Angular material select component with autocomplete and select all features",
+  "keywords" :["Angular","Library", "Material", "Select", "mat-select", "autocomplete"],
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/animations": "^6.1.10",
+    "@angular/cdk": "^7.3.3",
+    "@angular/material": "^7.3.3"
+  }
+}

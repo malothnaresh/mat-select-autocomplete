@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/select-autocomplete",
+  "lib": {
+    "entryFile": "src/public_api.ts"
+  }
+}
