@@ -44,6 +44,10 @@ export class AppComponent {
     this.multiSelect.toggleDropdown();
   }
 
+  resetAll() {
+    this.selectedOptions = [];
+  }
+
   getSelectedOptions(selected) {
     console.log(selected);
     this.selected = selected;

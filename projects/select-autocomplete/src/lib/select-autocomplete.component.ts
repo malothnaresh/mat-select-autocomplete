@@ -4,7 +4,8 @@ import {
   Input,
   OnChanges,
   Output,
-  ViewChild
+  ViewChild,
+  DoCheck
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -65,7 +66,7 @@ import { FormControl } from '@angular/forms';
     }`
   ]
 })
-export class SelectAutocompleteComponent implements OnChanges {
+export class SelectAutocompleteComponent implements OnChanges, DoCheck {
 
   @Input()
   placeholder;
@@ -111,6 +112,12 @@ export class SelectAutocompleteComponent implements OnChanges {
       this.selectedValue = this.selectedOptions;
     } else if (this.formControl.value) {
       this.selectedValue = this.formControl.value;
+    }
+  }
+
+  ngDoCheck() {
+    if(!this.selectedValue.length) {
+      this.selectionChange.emit(this.selectedValue);
     }
   }
 
