@@ -2,7 +2,7 @@
 
 MatSelectAutocomplete is Angular based material component with feature of multi-options selection and autocomplete features
 
-[Demo] stackblitz url here
+[Demo] (https://stackblitz.com/edit/mat-select-autocomplete)
 [Documentation] (https://medium.com/@cryptoipl/angular-material-multi-select-with-autocomplete-113065d58dab)
 
 ## Features
