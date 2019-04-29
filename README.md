@@ -30,3 +30,11 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 https://stackblitz.com/edit/mat-select-autocomplete
 ## Documentation
 https://medium.com/@cryptoipl/angular-material-multi-select-with-autocomplete-113065d58dab
+
+
+## To build package
+npm run package
+
+## To publish the package
+npm login
+npm publish ./dist/select-autocomplete/mat-select-autocomplete-1.2.1.tgz
