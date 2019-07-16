@@ -1,10 +1,21 @@
 <div class="container">
   <div class="toggling-container">
-    <button mat-raised-button (click)="onToggleDropdown()" color="primary">Toggle Dropdown</button>
-    <button mat-raised-button (click)="resetAll()" style="margin-left: 1rem;" color="primary">Reset All</button>
+    <button
+      mat-raised-button
+      (click)="onToggleDropdown()"
+      color="primary"
+    >Toggle Dropdown</button>
+    <button
+      mat-raised-button
+      (click)="resetAll()"
+      style="margin-left: 1rem;"
+      color="primary"
+    >Reset All</button>
   </div>
-  <mat-select-autocomplete class="grid-7-11"
+  <mat-select-autocomplete
+    class="grid-7-11"
     [placeholder]="'Options Selection'"
+    [selectPlaceholder]="'search...'"
     [errorMsg]="errorMessage"
     [showErrorMsg]="showError"
     [options]="options"
@@ -12,11 +23,13 @@
     [value]="'value'"
     [multiple]='true'
     [selectedOptions]="selectedOptions"
-    (selectionChange)="getSelectedOptions($event)">
+    (selectionChange)="getSelectedOptions($event)"
+  >
   </mat-select-autocomplete>
-  
+
   <div> Selected options are:
-    <span *ngFor="let option of selected; let index = index">{{option}}<span *ngIf="index !== selected.length-1">, </span></span>
+    <span *ngFor="let option of selected; let index = index">{{option}}<span *ngIf="index !== selected.length-1">,
+      </span></span>
   </div>
-  
+
 </div>

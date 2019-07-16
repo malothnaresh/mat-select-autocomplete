@@ -1,8 +1,8 @@
+import { SelectAutocompleteComponent } from 'select-autocomplete';
 import {
   Component,
   ViewChild
 } from '@angular/core';
-import { SelectAutocompleteComponent } from 'select-autocomplete';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +38,7 @@ export class AppComponent {
   showError = false;
   errorMessage = '';
 
-  constructor() {}
+  constructor() { }
 
   onToggleDropdown() {
     this.multiSelect.toggleDropdown();

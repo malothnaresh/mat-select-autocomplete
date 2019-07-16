@@ -18,7 +18,8 @@ import { FormControl } from '@angular/forms';
     <div class="box-search">
         <mat-checkbox *ngIf="multiple" color="primary" class="box-select-all" [(ngModel)]="selectAllChecked"
         (change)="toggleSelectAll($event)"></mat-checkbox>
-        <input #searchInput type="text" [ngClass]="{'pl-1': !multiple}" (input)="filterItem(searchInput.value)"  placeholder="Search...">
+        <input #searchInput type="text" [ngClass]="{'pl-1': !multiple}" (input)="filterItem(searchInput.value)" 
+          [placeholder]="selectPlaceholder">
         <div class="box-search-icon" (click)="filterItem(''); searchInput.value = ''">
           <button mat-icon-button class="search-button">
             <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
@@ -68,32 +69,21 @@ import { FormControl } from '@angular/forms';
 })
 export class SelectAutocompleteComponent implements OnChanges, DoCheck {
 
-  @Input()
-  placeholder;
-  @Input()
-  options;
-  @Input()
-  disabled = false;
-  @Input()
-  display = 'display';
-  @Input()
-  value = 'value';
-  @Input()
-  formControl = new FormControl();
-  @Input()
-  errorMsg = 'Field is required';
-  @Input()
-  showErrorMsg = false;
-  @Input()
-  selectedOptions;
-  @Input()
-  multiple = true;
+  @Input() selectPlaceholder: string = 'search...';
+  @Input() placeholder: string;
+  @Input() options;
+  @Input() disabled = false;
+  @Input() display = 'display';
+  @Input() value = 'value';
+  @Input() formControl: FormControl = new FormControl();
+  @Input() errorMsg: string = 'Field is required';
+  @Input() showErrorMsg = false;
+  @Input() selectedOptions;
+  @Input() multiple = true;
 
   // New Options
-  @Input()
-  labelCount = 1;
-  @Input()
-  appearance = 'standard';
+  @Input() labelCount: number = 1;
+  @Input() appearance: 'standard' | 'fill' | 'outline' = 'standard';
 
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
@@ -116,7 +106,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   ngDoCheck() {
-    if(!this.selectedValue.length) {
+    if (!this.selectedValue.length) {
       this.selectionChange.emit(this.selectedValue);
     }
   }
@@ -125,7 +115,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
     this.selectElem.toggle();
   }
 
-  toggleSelectAll = function(val) {
+  toggleSelectAll(val) {
     if (val.checked) {
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
@@ -139,7 +129,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
       );
     }
     this.selectionChange.emit(this.selectedValue);
-  };
+  }
 
   filterItem(value) {
     this.filteredOptions = this.options.filter(
