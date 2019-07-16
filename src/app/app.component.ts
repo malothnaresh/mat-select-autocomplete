@@ -1,4 +1,4 @@
-import { SelectAutocompleteComponent } from './../../projects/select-autocomplete/src/lib/select-autocomplete.component';
+import { SelectAutocompleteComponent } from 'select-autocomplete';
 import {
   Component,
   ViewChild
