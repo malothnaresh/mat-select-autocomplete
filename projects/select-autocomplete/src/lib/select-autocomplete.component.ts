@@ -15,7 +15,6 @@ import { FormControl } from "@angular/forms";
     <mat-form-field appearance="{{ appearance }}">
       <mat-select
         #selectElem
-        [disabled]="disabled"
         [placeholder]="placeholder"
         [formControl]="formControl"
         [multiple]="multiple"
@@ -122,6 +121,9 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   constructor() {}
 
   ngOnChanges() {
+    if (this.disabled) {
+      this.formControl.disable();
+    }
     this.filteredOptions = this.options;
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
@@ -197,10 +199,15 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
         }
         if (displayOption.length) {
           for (let i = 0; i < displayOption.length; i++) {
-            this.displayString += displayOption[i][this.display] + ",";
+            if (displayOption[i] && displayOption[i][this.display]) {
+              this.displayString += displayOption[i][this.display] + ",";
+            }
           }
           this.displayString = this.displayString.slice(0, -1);
-          if (this.selectedValue.length > 1) {
+          if (
+            this.selectedValue.length > 1 &&
+            this.selectedValue.length > this.labelCount
+          ) {
             this.displayString += ` (+${this.selectedValue.length -
               this.labelCount} others)`;
           }
