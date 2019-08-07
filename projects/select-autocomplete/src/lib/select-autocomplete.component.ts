@@ -49,7 +49,7 @@ import { FormControl } from "@angular/forms";
           {{ onDisplayString() }}
         </mat-select-trigger>
         <mat-option
-          *ngFor="let option of options"
+          *ngFor="let option of options; trackBy: trackByFn"
           [disabled]="option.disabled"
           [value]="option[value]"
           [style.display]="hideOption(option) ? 'none' : 'flex'"
@@ -238,5 +238,9 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
     }
     this.selectedValue = val.value;
     this.selectionChange.emit(this.selectedValue);
+  }
+
+  public trackByFn(index, item) {
+    return item.value;
   }
 }
