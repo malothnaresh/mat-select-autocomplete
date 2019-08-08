@@ -183,7 +183,7 @@ export class MultiselectComponent implements OnChanges {
       } else {
         // Single select display
         displayOption = this.options.filter(
-          option => option.value === this.selectedValue
+          option => option[this.value] === this.selectedValue
         );
         if (displayOption.length) {
           this.displayString = displayOption[0][this.display];
