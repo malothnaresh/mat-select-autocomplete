@@ -196,7 +196,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
         // Multi select display
         for (let i = 0; i < this.labelCount; i++) {
           displayOption[i] = this.options.filter(
-            option => option.value === this.selectedValue[i]
+            option => option[this.value] === this.selectedValue[i]
           )[0];
         }
         if (displayOption.length) {
@@ -217,7 +217,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
       } else {
         // Single select display
         displayOption = this.options.filter(
-          option => option.value === this.selectedValue
+          option => option[this.value] === this.selectedValue
         );
         if (displayOption.length) {
           this.displayString = displayOption[0][this.display];

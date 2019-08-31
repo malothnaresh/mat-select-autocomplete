@@ -20,8 +20,8 @@
     [errorMsg]="errorMessage"
     [showErrorMsg]="showError"
     [options]="options"
-    [display]="'display'"
-    [value]="'value'"
+    [display]="'label'"
+    [value]="'data'"
     [multiple]="true"
     [labelCount]="3"
     [selectedOptions]="selectedOptions"
@@ -31,8 +31,12 @@
 
   <div>
     Selected options are:
-    <span *ngFor="let option of selected; let index = index"
-      >{{ option }}<span *ngIf="index !== selected.length - 1">, </span></span
-    >
+    <span *ngIf="!multiple">{{ selected }}</span>
+    <div *ngIf="multiple">
+      <span *ngFor="let option of selected; let index = index">
+        {{ option }}
+        <span *ngIf="index !== selected.length - 1">, </span>
+      </span>
+    </div>
   </div>
 </div>
