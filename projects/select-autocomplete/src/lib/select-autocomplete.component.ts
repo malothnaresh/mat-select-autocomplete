@@ -123,6 +123,8 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   ngOnChanges() {
     if (this.disabled) {
       this.formControl.disable();
+    } else {
+      this.formControl.enable();
     }
     this.filteredOptions = this.options;
     if (this.selectedOptions) {
