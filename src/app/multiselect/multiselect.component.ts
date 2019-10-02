@@ -98,7 +98,7 @@ export class MultiselectComponent implements OnChanges {
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild('selectElem') selectElem;
+  @ViewChild('selectElem', { static: false }) selectElem;
 
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
@@ -119,7 +119,7 @@ export class MultiselectComponent implements OnChanges {
     this.selectElem.toggle();
   }
 
-  toggleSelectAll = function(val) {
+  toggleSelectAll = function (val) {
     if (val.checked) {
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
