@@ -183,7 +183,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   getFilteredOptionsValues() {
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
-      filteredValues.push(option.value);
+      filteredValues.push(option[this.value]);
     });
     return filteredValues;
   }
