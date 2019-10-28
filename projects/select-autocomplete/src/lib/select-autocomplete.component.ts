@@ -118,6 +118,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   selectedValue: Array<any> = [];
   selectAllChecked = false;
   displayString = "";
+  currentFilter;
   constructor() {}
 
   ngOnChanges() {
@@ -132,6 +133,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
     } else if (this.formControl.value) {
       this.selectedValue = this.formControl.value;
     }
+    this.filterItem(this.currentFilter);
   }
 
   ngDoCheck() {
@@ -161,6 +163,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   filterItem(value) {
+    this.currentFilter = value;
     this.filteredOptions = this.options.filter(
       item => item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1
     );
