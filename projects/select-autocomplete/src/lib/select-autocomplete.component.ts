@@ -112,7 +112,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild("selectElem") selectElem;
+  @ViewChild("selectElem", { static: true }) selectElem;
 
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
