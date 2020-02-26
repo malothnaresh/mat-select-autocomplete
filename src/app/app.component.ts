@@ -7,7 +7,7 @@ import { Component, ViewChild } from "@angular/core";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent {
-  @ViewChild(SelectAutocompleteComponent)
+  @ViewChild(SelectAutocompleteComponent, { static: true })
   multiSelect: SelectAutocompleteComponent;
 
   options = [
@@ -40,6 +40,7 @@ export class AppComponent {
   selected = this.selectedOptions;
   showError = false;
   errorMessage = "";
+  multiple = true;
 
   constructor() {}
 
