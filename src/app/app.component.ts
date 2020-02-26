@@ -40,6 +40,7 @@ export class AppComponent {
   selected = this.selectedOptions;
   showError = false;
   errorMessage = "";
+  multiple = true;
 
   constructor() {}
 
