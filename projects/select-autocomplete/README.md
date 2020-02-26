@@ -1,5 +1,8 @@
 # MatSelectAutocomplete
 
+This is a fork from https://github.com/malothnaresh/mat-select-autocomplete 
+repo https://github.com/drog/mat-select-autocomplete
+
 MatSelectAutocomplete is Angular based material component with feature of multi-options selection and autocomplete features
 
 [Demo] (https://stackblitz.com/edit/mat-select-autocomplete)
@@ -15,14 +18,14 @@ MatSelectAutocomplete is Angular based material component with feature of multi-
 
 ## Installation
 Install MatSelectAutocomplete with npm:
-npm install select-autocomplete --save
+npm install select-autocomplete-fork --save
 
 ## Dependency
 Angular Material. Add it using [GettingStartedWithAngularMaterial].
 
 ## Usage
 Install select-autocomplete using [npm]
-In AppModule, import { SelectAutocompleteModule } from ‘select-autocomplete’;
+In AppModule, import { SelectAutocompleteModule } from ‘select-autocomplete-fork’;
 Add it to your AppModule import list
 Add material theme to your styles.scss as @import “~@angular/material/prebuilt-themes/indigo-pink.css”;
 Add Material icons fonts to index.html as (<link href=”https://fonts.googleapis.com/icon?family=Material+Icons" rel=”stylesheet”>)
