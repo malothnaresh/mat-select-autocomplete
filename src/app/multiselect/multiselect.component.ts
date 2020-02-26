@@ -10,60 +10,8 @@ import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-multiselect',
-  template: `
-  <mat-form-field appearance="{{appearance}}">
-  <mat-select #selectElem [disabled]="disabled" [placeholder]="placeholder" [formControl]="formControl" [multiple]="multiple"
-  [(ngModel)]="selectedValue" (selectionChange)="onSelectionChange($event)">
-  <div class="box-search">
-      <mat-checkbox *ngIf="multiple" color="primary" class="box-select-all" [(ngModel)]="selectAllChecked"
-      (change)="toggleSelectAll($event)"></mat-checkbox>
-      <input #searchInput type="text" [ngClass]="{'pl-1': !multiple}" (input)="filterItem(searchInput.value)"  placeholder="Search...">
-      <div class="box-search-icon" (click)="filterItem(''); searchInput.value = ''">
-        <button mat-icon-button class="search-button">
-          <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
-        </button>
-      </div>
-    </div>
-    <mat-select-trigger>
-      {{onDisplayString()}}
-    </mat-select-trigger>
-      <mat-option *ngFor="let option of options" [disabled]="option.disabled" [value]="option[value]"
-        [style.display]="hideOption(option) ? 'none': 'flex'">{{option[display]}}
-      </mat-option>
-  </mat-select>
-  <mat-hint style="color:red" *ngIf="showErrorMsg">{{errorMsg}}</mat-hint>
-</mat-form-field>
-  `,
-  styles: [
-    `
-    .box-search {
-      margin: 8px;
-      border-radius: 2px;
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-      transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-    }
-    .box-search input {
-      flex: 1;
-      border: none;
-      outline: none;
-    }
-    .box-select-all {
-      width: 36px;
-      line-height: 33px;
-      color: #808080;
-      text-align: center;
-    }
-    .search-button {
-      width: 36px;
-      height: 36px;
-      line-height: 33px;
-      color: #808080;
-    }
-    .pl-1 {
-      padding-left: 1rem;
-    }`
-  ]
+  templateUrl: './multiselect.component.html',
+  styleUrls: ['./multiselect.component.scss']
 })
 
 export class MultiselectComponent implements OnChanges {
