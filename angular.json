@@ -167,5 +167,8 @@
       }
     }
   },
-  "defaultProject": "select-autocomplete-app"
+  "defaultProject": "mat-select-autocomplete-angular9",
+  "cli": {
+    "analytics": false
+  }
 }
