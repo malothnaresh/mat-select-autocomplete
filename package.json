@@ -1,6 +1,6 @@
 {
-  "name": "select-autocomplete-app",
-  "version": "0.0.0",
+  "name": "mat-select-autocomplete-angular9",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -13,7 +13,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "~9.0.2",
     "@angular/cdk": "^9.1.0",
@@ -27,12 +27,12 @@
     "@angular/platform-browser-dynamic": "^9.0.2",
     "@angular/router": "^9.0.2",
     "core-js": "^3.6.4",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "rxjs": "~6.5.4",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.900.3",
+    "@angular-devkit/build-angular": "^0.901.7",
     "@angular-devkit/build-ng-packagr": "~0.900.3",
     "@angular/cli": "~9.0.3",
     "@angular/compiler-cli": "~9.0.2",
