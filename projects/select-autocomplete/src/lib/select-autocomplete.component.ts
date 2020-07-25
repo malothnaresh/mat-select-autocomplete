@@ -48,6 +48,7 @@ import { FormControl } from "@angular/forms";
         <mat-select-trigger>
           {{ onDisplayString() }}
         </mat-select-trigger>
+        <div class="box-search-contents">
         <mat-option
           *ngFor="let option of options; trackBy: trackByFn"
           [disabled]="option.disabled"
@@ -55,6 +56,7 @@ import { FormControl } from "@angular/forms";
           [style.display]="hideOption(option) ? 'none' : 'flex'"
           >{{ option[display] }}
         </mat-option>
+        </div>
       </mat-select>
       <mat-hint style="color:red" *ngIf="showErrorMsg">{{ errorMsg }}</mat-hint>
     </mat-form-field>
@@ -73,6 +75,10 @@ import { FormControl } from "@angular/forms";
         flex: 1;
         border: none;
         outline: none;
+      }
+      .box-search-contents {
+        overflow-y:auto;
+        height:200px
       }
       .box-select-all {
         width: 36px;
