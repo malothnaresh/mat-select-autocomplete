@@ -17,7 +17,7 @@ import { FormControl } from '@angular/forms';
   <div class="box-search">
       <mat-checkbox *ngIf="multiple" color="primary" class="box-select-all" [(ngModel)]="selectAllChecked"
       (change)="toggleSelectAll($event)"></mat-checkbox>
-      <input #searchInput type="text" [ngClass]="{'pl-1': !multiple}" (input)="filterItem(searchInput.value)"  placeholder="Search...">
+      <input #searchInput type="text" [ngClass]="{'pl-1': !multiple}" (input)="filterItem(searchInput.value)" (keyup)="keyFunc($event)" placeholder="Search...">
       <div class="box-search-icon" (click)="filterItem(''); searchInput.value = ''">
         <button mat-icon-button class="search-button">
           <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
@@ -97,6 +97,9 @@ export class MultiselectComponent implements OnChanges {
 
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
+
+  @Output()
+  onKeyUp: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('selectElem') selectElem;
 
@@ -206,6 +209,10 @@ export class MultiselectComponent implements OnChanges {
     }
     this.selectedValue = val.value;
     this.selectionChange.emit(this.selectedValue);
+  }
+
+  keyFunc(event){
+    this.onKeyUp.emit(event)
   }
 
 }
