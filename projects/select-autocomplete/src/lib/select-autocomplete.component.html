@@ -1,0 +1,71 @@
+<mat-form-field
+  appearance="{{ appearance }}"
+  class="select-autocomplete"
+>
+  <mat-label *ngIf="fieldLabel">{{ fieldLabel }}</mat-label>
+  <mat-select
+    #selectElem
+    id="{{ fieldsSelectors?.selectField }}"
+    [disabled]="disabled"
+    [multiple]="multiple"
+    [placeholder]="placeholder"
+    [formControl]="fieldFormControl"
+    [(ngModel)]="selectedValue"
+    (selectionChange)="onSelectionChange($event)"
+    (openedChange)="setFocus($event)"
+  >
+  <div class="search-container">
+    <div class="box-search">
+      <mat-checkbox
+        *ngIf="multiple"
+        color="primary"
+        class="box-select-all"
+        [(ngModel)]="selectAllChecked"
+        (change)="toggleSelectAll($event)"
+      >
+      </mat-checkbox>
+      <input
+        #searchInput
+        id="{{ fieldsSelectors?.inputField }}"
+        type="text"
+        [ngClass]="{ 'pl-1': !multiple }"
+        (input)="filterItem(searchInput.value)"
+        (keydown)="keyDown($event)"
+        (keyup)="keyUp($event)"
+        (keyup.enter)="chooseFirstOption()"
+        placeholder="Search..."
+      />
+      <div
+        class="box-search-icon"
+        (click)="filterItem(''); searchInput.value = ''"
+      >
+        <button mat-icon-button class="search-button">
+          <mat-icon
+            class="mat-24"
+            aria-label="Search icon"
+            id="{{ fieldsSelectors?.clearFieldIcon }}"
+            >clear</mat-icon
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+    <mat-select-trigger> {{ onDisplayString() }} </mat-select-trigger>
+    <mat-option
+      *ngFor="let option of options"
+      [disabled]="option.disabled"
+      [value]="option[value]"
+      [style.display]="hideOption(option) ? 'none' : 'flex'"
+    >
+      {{ option[display] }}
+    </mat-option>
+    <mat-option *ngIf="options && !options.length" [disabled]="true"> No results found. </mat-option>
+    <div class="clear-selection" *ngIf="selectedValue.length && options.length">
+      <mat-divider></mat-divider>
+      <a (click)="clearSelection()" id="{{ fieldsSelectors?.clearSelection }}"
+        >Clear selected items</a
+      >
+    </div>
+  </mat-select>
+  <mat-hint style="color: red" *ngIf="showErrorMsg">{{ errorMsg }}</mat-hint>
+</mat-form-field>

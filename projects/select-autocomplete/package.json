@@ -10,11 +10,14 @@
     "mat-select",
     "autocomplete"
   ],
-  "peerDependencies": {
-    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
-    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
-    "@angular/animations": "^6.1.10",
-    "@angular/cdk": "^7.3.3",
-    "@angular/material": "^7.3.3"
+    "peerDependencies": {
+    "@angular/common": "^11.0.9",
+    "@angular/core": "^11.0.9",
+    "@angular/animations": "^11.0.4",
+    "@angular/cdk": "^11.0.4",
+    "@angular/material": "^11.0.4"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
   }
 }

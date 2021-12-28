@@ -5,138 +5,98 @@ import {
   OnChanges,
   Output,
   ViewChild,
-  DoCheck
+  OnInit,
+  AfterViewInit,
 } from "@angular/core";
 import { FormControl } from "@angular/forms";
 
+export interface ElementsSelectors {
+  inputField: string;
+  selectField: string;
+  clearFieldIcon: string;
+  clearSelection: string;
+}
 @Component({
-  selector: "mat-select-autocomplete",
-  template: `
-    <mat-form-field appearance="{{ appearance }}">
-      <mat-select
-        #selectElem
-        [placeholder]="placeholder"
-        [formControl]="formControl"
-        [multiple]="multiple"
-        [(ngModel)]="selectedValue"
-        (selectionChange)="onSelectionChange($event)"
-      >
-        <div class="box-search">
-          <mat-checkbox
-            *ngIf="multiple"
-            color="primary"
-            class="box-select-all"
-            [(ngModel)]="selectAllChecked"
-            (change)="toggleSelectAll($event)"
-          ></mat-checkbox>
-          <input
-            #searchInput
-            type="text"
-            [ngClass]="{ 'pl-1': !multiple }"
-            (input)="filterItem(searchInput.value)"
-            [placeholder]="selectPlaceholder"
-          />
-          <div
-            class="box-search-icon"
-            (click)="filterItem(''); searchInput.value = ''"
-          >
-            <button mat-icon-button class="search-button">
-              <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
-            </button>
-          </div>
-        </div>
-        <mat-select-trigger>
-          {{ onDisplayString() }}
-        </mat-select-trigger>
-        <mat-option
-          *ngFor="let option of options; trackBy: trackByFn"
-          [disabled]="option.disabled"
-          [value]="option[value]"
-          [style.display]="hideOption(option) ? 'none' : 'flex'"
-          >{{ option[display] }}
-        </mat-option>
-      </mat-select>
-      <mat-hint style="color:red" *ngIf="showErrorMsg">{{ errorMsg }}</mat-hint>
-    </mat-form-field>
-  `,
-  styles: [
-    `
-      .box-search {
-        margin: 8px;
-        border-radius: 2px;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16),
-          0 0 0 1px rgba(0, 0, 0, 0.08);
-        transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-      }
-      .box-search input {
-        flex: 1;
-        border: none;
-        outline: none;
-      }
-      .box-select-all {
-        width: 36px;
-        line-height: 33px;
-        color: #808080;
-        text-align: center;
-      }
-      .search-button {
-        width: 36px;
-        height: 36px;
-        line-height: 33px;
-        color: #808080;
-      }
-      .pl-1 {
-        padding-left: 1rem;
-      }
-    `
-  ]
+  selector: 'multiselect',
+  templateUrl: './select-autocomplete.component.html',
+  styleUrls: ['./select-autocomplete.component.scss']
 })
-export class SelectAutocompleteComponent implements OnChanges, DoCheck {
+export class MultiselectComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() selectPlaceholder: string = "search...";
   @Input() placeholder: string;
-  @Input() options;
+  @Input() options$;
   @Input() disabled = false;
   @Input() display = "display";
   @Input() value = "value";
-  @Input() formControl: FormControl = new FormControl();
+  @Input() fieldFormControl: FormControl = new FormControl();
   @Input() errorMsg: string = "Field is required";
   @Input() showErrorMsg = false;
   @Input() selectedOptions;
   @Input() multiple = true;
-
-  // New Options
   @Input() labelCount: number = 1;
   @Input() appearance: "standard" | "fill" | "outline" = "standard";
+  @Input() fieldLabel: string;
+  @Input() fieldsSelectors: ElementsSelectors;
 
-  @Output()
-  selectionChange: EventEmitter<any> = new EventEmitter();
+  @Output() selectionChange: EventEmitter<any> = new EventEmitter();
+  @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild("selectElem") selectElem;
+  @ViewChild("selectElem", { static: false }) selectElem;
+  @ViewChild('searchInput', { static: false }) searchInput;
 
+  options: Array<any> = [];
+  originOptions: Array<any> = [];
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
+  displayOptions: Array<string> = [];
   selectAllChecked = false;
   displayString = "";
-  constructor() {}
+  ctrlClicked = false;
+  searchBy = 'initial';
 
-  ngOnChanges() {
+  constructor() { }
+
+  ngOnInit(): void {
+    this.onSearch.emit('');
+    this.options$.subscribe(res => {
+      this.originOptions = this.options = this.filteredOptions = res.sort(this.sortOptions());
+      if (!this.searchBy) this.rearrangOptions();
+      this.checkIfAllSelected();
+    });
+  }
+  ngOnChanges(): void {
     if (this.disabled) {
-      this.formControl.disable();
+      this.fieldFormControl.disable();
     } else {
-      this.formControl.enable();
+      this.fieldFormControl.enable();
     }
-    this.filteredOptions = this.options;
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
-    } else if (this.formControl.value) {
-      this.selectedValue = this.formControl.value;
+      this.preserveSelectedOptions();
+      this.displayOptions.sort(this.sortOptions());
+    } else if (this.fieldFormControl.value) {
+      this.selectedValue = this.fieldFormControl.value;
     }
   }
 
-  ngDoCheck() {
-    if (!this.selectedValue.length) {
-      this.selectionChange.emit(this.selectedValue);
+  ngAfterViewInit(): void {
+    this.searchInput.nativeElement.value = '';
+    if (this.selectElem) {
+      let click: MouseEvent = null;
+      this.selectElem.overlayDir.backdropClick.subscribe((event) => {
+        // the backdrop element is still in the DOM, so store the event for using after it has been detached
+        click = event;
+      });
+      const nativeEl = this.selectElem._elementRef.nativeElement;
+      nativeEl.addEventListener('focus', () => {
+        this.selectElem.open();
+      });
+      this.selectElem.overlayDir.detach.subscribe((a) => {
+        if (click) {
+          const el = document.elementFromPoint(click.pageX, click.pageY) as HTMLElement;
+          el.click();
+        }
+      });
     }
   }
 
@@ -153,26 +113,14 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
       });
     } else {
       const filteredValues = this.getFilteredOptionsValues();
-      this.selectedValue = this.selectedValue.filter(
-        item => !filteredValues.includes(item)
-      );
+      this.selectedValue = this.selectedValue.filter(item => !filteredValues.includes(item));
     }
     this.selectionChange.emit(this.selectedValue);
   }
 
   filterItem(value) {
-    this.filteredOptions = this.options.filter(
-      item => item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1
-    );
-    this.selectAllChecked = true;
-    this.filteredOptions.forEach(item => {
-      if (!this.selectedValue.includes(item[this.value])) {
-        this.selectAllChecked = false;
-      }
-    });
-    if (!this.filteredOptions.length) {
-      this.selectAllChecked = false;
-    }
+    this.searchBy = value;
+    this.onSearch.emit(this.searchBy);
   }
 
   hideOption(option) {
@@ -183,7 +131,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   getFilteredOptionsValues() {
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
-      filteredValues.push(option.value);
+      filteredValues.push(option[this.value]);
     });
     return filteredValues;
   }
@@ -191,18 +139,12 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   onDisplayString() {
     this.displayString = "";
     if (this.selectedValue && this.selectedValue.length) {
-      let displayOption = [];
       if (this.multiple) {
         // Multi select display
-        for (let i = 0; i < this.labelCount; i++) {
-          displayOption[i] = this.options.filter(
-            option => option[this.value] === this.selectedValue[i]
-          )[0];
-        }
-        if (displayOption.length) {
-          for (let i = 0; i < displayOption.length; i++) {
-            if (displayOption[i] && displayOption[i][this.display]) {
-              this.displayString += displayOption[i][this.display] + ",";
+        if (this.displayOptions.length) {
+          for (let i = 0; i < this.displayOptions.length; i++) {
+            if (this.displayOptions[i] && this.displayOptions[i][this.display]) {
+              this.displayString += this.displayOptions[i][this.display] + ",";
             }
           }
           this.displayString = this.displayString.slice(0, -1);
@@ -216,11 +158,11 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
         }
       } else {
         // Single select display
-        displayOption = this.options.filter(
+        this.searchInput.displayOption = this.options.filter(
           option => option[this.value] === this.selectedValue
         );
-        if (displayOption.length) {
-          this.displayString = displayOption[0][this.display];
+        if (this.displayOptions.length) {
+          this.displayString = this.displayOptions[0][this.display];
         }
       }
     }
@@ -228,21 +170,97 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   onSelectionChange(val) {
-    const filteredValues = this.getFilteredOptionsValues();
-    let count = 0;
-    if (this.multiple) {
-      this.selectedValue.filter(item => {
-        if (filteredValues.includes(item)) {
-          count++;
-        }
-      });
-      this.selectAllChecked = count === this.filteredOptions.length;
-    }
     this.selectedValue = val.value;
+    this.checkIfAllSelected();
     this.selectionChange.emit(this.selectedValue);
   }
 
   public trackByFn(index, item) {
     return item.value;
   }
+
+  setFocus(event) {
+    this.rearrangOptions();
+    if (event) {
+      this.searchInput.nativeElement.focus();
+    }
+  }
+
+  keyUp(ev) {
+    if (ev.keyCode === 17) {
+      this.ctrlClicked = false;
+    }
+  }
+  keyDown(ev) {
+    if (ev.keyCode === 17) {
+      this.ctrlClicked = true;
+    }
+    if (ev.keyCode === 65 && this.ctrlClicked) { // to prevent select all behavior on clicking Ctrl+A
+      ev.cancelBubble = true;
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+    }
+    if (ev.code === 'Space') {
+      ev.stopPropagation();
+    }
+  }
+
+  chooseFirstOption(): void {
+    this.selectElem.options.first.select();
+  }
+
+  clearSelection() {
+    this.selectAllChecked = false;
+    this.selectedValue = [];
+    this.selectionChange.emit(this.selectedValue);
+  }
+
+  rearrangOptions() {
+    const selectedOptions = [];
+    const unselectedOptions = [];
+    this.originOptions.forEach(option => {
+      if (this.selectedValue.includes(option[this.value])) {
+        selectedOptions.push(option);
+      } else {
+        unselectedOptions.push(option);
+      }
+    });
+
+    this.options = (this.selectedValue.length === 0) ? this.originOptions : [
+      ...selectedOptions,
+      ...unselectedOptions
+    ];
+  }
+
+  checkIfAllSelected() {
+    if (this.multiple && this.filteredOptions.length > 0) {
+      this.selectAllChecked = this.filteredOptions.every(item => this.selectedValue.includes(item[this.value]));
+    }
+  }
+  sortOptions() {
+    return (a, b) => {
+      var nameA = a[this.display].toUpperCase();
+      var nameB = b[this.display].toUpperCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    }
+  }
+
+  preserveSelectedOptions() {
+    this.displayOptions = this.displayOptions.filter(opt => this.selectedValue.includes(opt[this.value]));
+    this.selectedValue.forEach(option => {
+      if (!this.displayOptions.find(opt => opt[this.value] === option)) {
+        this.displayOptions.push(this.options.find(opt => opt[this.value] === option));
+      }
+    });
+
+
+  }
 }
+
+
