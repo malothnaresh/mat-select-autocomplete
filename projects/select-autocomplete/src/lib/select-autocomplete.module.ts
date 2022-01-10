@@ -8,10 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 
-import { MultiselectComponent } from './select-autocomplete.component';
+import { SelectAutocompleteComponent } from './select-autocomplete.component';
 
 @NgModule({
-  declarations: [ MultiselectComponent ],
+  declarations: [ SelectAutocompleteComponent ],
   imports: [
     FormsModule,
     CommonModule,
@@ -23,6 +23,6 @@ import { MultiselectComponent } from './select-autocomplete.component';
     ReactiveFormsModule,
     MatDividerModule
   ],
-  exports: [ MultiselectComponent ]
+  exports: [ SelectAutocompleteComponent ]
 })
-export class MultiselectModule { }
+export class SelectAutocompleteModule { }

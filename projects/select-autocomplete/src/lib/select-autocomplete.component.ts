@@ -17,11 +17,11 @@ export interface ElementsSelectors {
   clearSelection: string;
 }
 @Component({
-  selector: 'multiselect',
+  selector: 'mat-select-autocomplete',
   templateUrl: './select-autocomplete.component.html',
   styleUrls: ['./select-autocomplete.component.scss']
 })
-export class MultiselectComponent implements OnInit, OnChanges, AfterViewInit {
+export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() selectPlaceholder: string = "search...";
   @Input() placeholder: string;
   @Input() options$;
