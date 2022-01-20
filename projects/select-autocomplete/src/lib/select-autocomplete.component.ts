@@ -189,23 +189,27 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.selectionChange.emit(this.allSelectedValues);
   }
 
-  public trackByFn(index, item) {
+  public trackByFn(index, item): any {
     return item.value;
   }
 
   setFocus(event): void {
-    this.rearrangOptions();
     if (event) {
       this.searchInput.nativeElement.focus();
+    } else {
+      this.searchInput.nativeElement.value = '';
+      this.searchBy = undefined;
+      this.onSearch.emit('');
     }
+    this.rearrangOptions();
   }
 
-  keyUp(ev) {
+  keyUp(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = false;
     }
   }
-  keyDown(ev) {
+  keyDown(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = true;
     }
@@ -223,7 +227,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.selectElem.options.first.select();
   }
 
-  clearSelection() {
+  clearSelection(): void {
     this.selectAllChecked = false;
     this.selectedValue = [];
     this.allSelectedValues = [];
@@ -254,8 +258,8 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
   sortOptions() {
     return (a, b) => {
-      var nameA = a[this.display].toUpperCase();
-      var nameB = b[this.display].toUpperCase();
+      const nameA = a[this.display].toUpperCase();
+      const nameB = b[this.display].toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -263,7 +267,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         return 1;
       }
       return 0;
-    }
+    };
   }
 
   preserveSelectedOptions(): void {
