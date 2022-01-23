@@ -150,7 +150,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
               this.displayString += option[this.display] + ', ';
             }
           }
-          this.displayString = this.displayString.slice(0, -1);
+          this.displayString = this.displayString.slice(0, -2);
           if (
             this.selectedValue.length > 1 &&
             this.selectedValue.length > this.labelCount
