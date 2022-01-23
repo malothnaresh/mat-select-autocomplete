@@ -110,6 +110,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
           this.selectedValue = this.selectedValue.concat([option[this.value]]);
+          this.allSelectedValues = this.selectedValue;
         }
       });
     } else {
@@ -146,7 +147,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         if (this.displayOptions.length) {
           for (const option of this.displayOptions) {
             if (option && option[this.display]) {
-              this.displayString += option[this.display] + ',';
+              this.displayString += option[this.display] + ', ';
             }
           }
           this.displayString = this.displayString.slice(0, -1);
