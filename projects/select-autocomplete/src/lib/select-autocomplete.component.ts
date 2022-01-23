@@ -7,8 +7,8 @@ import {
   ViewChild,
   OnInit,
   AfterViewInit,
-} from "@angular/core";
-import { FormControl } from "@angular/forms";
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 export interface ElementsSelectors {
   inputField: string;
@@ -22,26 +22,26 @@ export interface ElementsSelectors {
   styleUrls: ['./select-autocomplete.component.scss']
 })
 export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterViewInit {
-  @Input() selectPlaceholder: string = "search...";
+  @Input() selectPlaceholder = 'search...';
   @Input() placeholder: string;
   @Input() options$;
   @Input() disabled = false;
-  @Input() display = "display";
-  @Input() value = "value";
+  @Input() display = 'display';
+  @Input() value = 'value';
   @Input() fieldFormControl: FormControl = new FormControl();
-  @Input() errorMsg: string = "Field is required";
+  @Input() errorMsg = 'Field is required';
   @Input() showErrorMsg = false;
   @Input() selectedOptions;
   @Input() multiple = true;
-  @Input() labelCount: number = 1;
-  @Input() appearance: "standard" | "fill" | "outline" = "standard";
+  @Input() labelCount = 1;
+  @Input() appearance: 'standard' | 'fill' | 'outline' = 'standard';
   @Input() fieldLabel: string;
   @Input() fieldsSelectors: ElementsSelectors;
 
   @Output() selectionChange: EventEmitter<any> = new EventEmitter();
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild("selectElem", { static: false }) selectElem;
+  @ViewChild('selectElem', { static: false }) selectElem;
   @ViewChild('searchInput', { static: false }) searchInput;
 
   options: Array<any> = [];
@@ -49,8 +49,9 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
   displayOptions: Array<string> = [];
+  allSelectedValues = [];
   selectAllChecked = false;
-  displayString = "";
+  displayString = '';
   ctrlClicked = false;
   searchBy = 'initial';
 
@@ -60,7 +61,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.onSearch.emit('');
     this.options$.subscribe(res => {
       this.originOptions = this.options = this.filteredOptions = res.sort(this.sortOptions());
-      if (!this.searchBy) this.rearrangOptions();
+      if (!this.searchBy) { this.rearrangOptions(); }
       this.checkIfAllSelected();
     });
   }
@@ -100,35 +101,37 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     }
   }
 
-  toggleDropdown() {
+  toggleDropdown(): void {
     this.selectElem.toggle();
   }
 
-  toggleSelectAll(val) {
+  toggleSelectAll(val): void {
     if (val.checked) {
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
           this.selectedValue = this.selectedValue.concat([option[this.value]]);
+          this.allSelectedValues = this.selectedValue;
         }
       });
     } else {
       const filteredValues = this.getFilteredOptionsValues();
       this.selectedValue = this.selectedValue.filter(item => !filteredValues.includes(item));
+      this.allSelectedValues = this.selectedValue;
     }
     this.selectionChange.emit(this.selectedValue);
   }
 
-  filterItem(value) {
+  filterItem(value): void {
     this.searchBy = value;
     this.onSearch.emit(this.searchBy);
   }
 
-  hideOption(option) {
-    return !(this.filteredOptions.indexOf(option) > -1);
+  hideOption(option): boolean {
+    return (this.filteredOptions.indexOf(option) === -1);
   }
 
   // Returns plain strings array of filtered values
-  getFilteredOptionsValues() {
+  getFilteredOptionsValues(): any {
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
       filteredValues.push(option[this.value]);
@@ -136,18 +139,18 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     return filteredValues;
   }
 
-  onDisplayString() {
-    this.displayString = "";
-    if (this.selectedValue && this.selectedValue.length) {
+  onDisplayString(): string {
+    this.displayString = '';
+    if (this.allSelectedValues && this.allSelectedValues.length) {
       if (this.multiple) {
         // Multi select display
         if (this.displayOptions.length) {
-          for (let i = 0; i < this.displayOptions.length; i++) {
-            if (this.displayOptions[i] && this.displayOptions[i][this.display]) {
-              this.displayString += this.displayOptions[i][this.display] + ",";
+          for (const option of this.displayOptions) {
+            if (option && option[this.display]) {
+              this.displayString += option[this.display] + ', ';
             }
           }
-          this.displayString = this.displayString.slice(0, -1);
+          this.displayString = this.displayString.slice(0, -2);
           if (
             this.selectedValue.length > 1 &&
             this.selectedValue.length > this.labelCount
@@ -169,29 +172,45 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     return this.displayString;
   }
 
-  onSelectionChange(val) {
-    this.selectedValue = val.value;
-    this.checkIfAllSelected();
-    this.selectionChange.emit(this.selectedValue);
-  }
-
-  public trackByFn(index, item) {
-    return item.value;
-  }
-
-  setFocus(event) {
-    this.rearrangOptions();
-    if (event) {
-      this.searchInput.nativeElement.focus();
+  optionClicked(v): void {
+    if (!v.source.selected && v.isUserInput) {
+      const index = this.allSelectedValues.indexOf(v.source.value);
+      this.allSelectedValues.splice(index, 1);
+      // to be reviewd
+      this.searchInput.nativeElement.value = '';
+      this.onSearch.emit('');
     }
   }
 
-  keyUp(ev) {
+  onSelectionChange(val): void {
+    this.selectedValue = val.value;
+    this.allSelectedValues.push(...this.selectedValue);
+    this.allSelectedValues = [...new Set([...this.allSelectedValues])];
+    this.checkIfAllSelected();
+    this.selectionChange.emit(this.allSelectedValues);
+  }
+
+  public trackByFn(index, item): any {
+    return item.value;
+  }
+
+  setFocus(event): void {
+    if (event) {
+      this.searchInput.nativeElement.focus();
+    } else {
+      this.searchInput.nativeElement.value = '';
+      this.searchBy = undefined;
+      this.onSearch.emit('');
+    }
+    this.rearrangOptions();
+  }
+
+  keyUp(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = false;
     }
   }
-  keyDown(ev) {
+  keyDown(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = true;
     }
@@ -209,13 +228,14 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.selectElem.options.first.select();
   }
 
-  clearSelection() {
+  clearSelection(): void {
     this.selectAllChecked = false;
     this.selectedValue = [];
+    this.allSelectedValues = [];
     this.selectionChange.emit(this.selectedValue);
   }
 
-  rearrangOptions() {
+  rearrangOptions(): void {
     const selectedOptions = [];
     const unselectedOptions = [];
     this.originOptions.forEach(option => {
@@ -232,15 +252,15 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     ];
   }
 
-  checkIfAllSelected() {
+  checkIfAllSelected(): void {
     if (this.multiple && this.filteredOptions.length > 0) {
       this.selectAllChecked = this.filteredOptions.every(item => this.selectedValue.includes(item[this.value]));
     }
   }
   sortOptions() {
     return (a, b) => {
-      var nameA = a[this.display].toUpperCase();
-      var nameB = b[this.display].toUpperCase();
+      const nameA = a[this.display].toUpperCase();
+      const nameB = b[this.display].toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -248,18 +268,16 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         return 1;
       }
       return 0;
-    }
+    };
   }
 
-  preserveSelectedOptions() {
-    this.displayOptions = this.displayOptions.filter(opt => this.selectedValue.includes(opt[this.value]));
-    this.selectedValue.forEach(option => {
+  preserveSelectedOptions(): void {
+    this.displayOptions = this.displayOptions.filter(opt => this.allSelectedValues.includes(opt[this.value]));
+    this.allSelectedValues.forEach(option => {
       if (!this.displayOptions.find(opt => opt[this.value] === option)) {
         this.displayOptions.push(this.options.find(opt => opt[this.value] === option));
       }
     });
-
-
   }
 }
 
