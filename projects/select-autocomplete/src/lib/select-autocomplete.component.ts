@@ -15,6 +15,7 @@ export interface ElementsSelectors {
   selectField: string;
   clearFieldIcon: string;
   clearSelection: string;
+  searchField?: string
 }
 @Component({
   selector: 'mat-select-autocomplete',

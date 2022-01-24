@@ -28,11 +28,17 @@
       {{ option[display] }}
     </mat-option>
     <mat-option *ngIf="options && !options.length" [disabled]="true"> No results found. </mat-option>
-    <div class="clear-selection" *ngIf="selectedValue.length && options.length">
-      <mat-divider></mat-divider>
-      <a (click)="clearSelection()" id="{{ fieldsSelectors?.clearSelection }}"
-        [attr.data-cy]="fieldsSelectors?.clearSelection">Clear selected items</a>
-    </div>
+    <mat-option
+      [disabled]="true"
+      class="clear-selection"
+      (click)="clearSelection()"
+      id="{{ fieldsSelectors?.clearSelection }}"
+      *ngIf="selectedValue.length && options.length">
+      <div>
+        <mat-divider></mat-divider>
+        <span [attr.data-cy]="fieldsSelectors?.clearSelection">Clear selected items</span>
+      </div>
+    </mat-option>
   </mat-select>
   <mat-hint style="color: red" *ngIf="showErrorMsg">{{ errorMsg }}</mat-hint>
 </mat-form-field>
