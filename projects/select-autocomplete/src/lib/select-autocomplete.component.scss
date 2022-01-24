@@ -52,10 +52,12 @@
     display: none;
   }
   &:hover {
-    background-color: #f1f1f1;
+    background-color: #f5f5f5;
+  }
+  &[aria-disabled="true"]{
+    cursor: pointer;
   }
   span {
-    cursor: pointer;
     color: black;
     padding: 12px;
     text-decoration: underline;
@@ -65,6 +67,12 @@
     color: #6b778c;
   }
 }
-::ng-deep .mat-select-panel mat-option.mat-option {
-  height: 40px;
+::ng-deep .mat-select-panel {
+  max-height: 300px;
+  mat-option.mat-option {
+    height: 40px;
+  }
+  .mat-option.mat-active {
+    background-color: #f5f5f5;
+  }
 }

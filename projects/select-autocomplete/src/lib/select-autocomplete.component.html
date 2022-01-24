@@ -29,6 +29,7 @@
     </mat-option>
     <mat-option *ngIf="options && !options.length" [disabled]="true"> No results found. </mat-option>
     <mat-option
+      [disabled]="true"
       class="clear-selection"
       (click)="clearSelection()"
       id="{{ fieldsSelectors?.clearSelection }}"
