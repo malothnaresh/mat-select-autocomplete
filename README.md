@@ -1,6 +1,6 @@
 # SelectAutocompleteApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.4.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.
 
 ## Development server
 
@@ -37,4 +37,4 @@ npm run package
 
 ## To publish the package
 npm login
-npm publish ./dist/select-autocomplete/mat-select-autocomplete-1.2.1.tgz
+npm publish ./dist/select-autocomplete/mat-select-autocomplete-angular11-1.4.9.tgz
