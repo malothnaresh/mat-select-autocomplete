@@ -33,7 +33,7 @@
       class="clear-selection"
       (click)="clearSelection()"
       id="{{ fieldsSelectors?.clearSelection }}"
-      *ngIf="selectedValue.length && options.length">
+      *ngIf="selectedValue?.length && options?.length">
       <div>
         <mat-divider></mat-divider>
         <span [attr.data-cy]="fieldsSelectors?.clearSelection">Clear selected items</span>
