@@ -74,10 +74,14 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     }
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
-      this.preserveSelectedOptions();
+      this.allSelectedValues = this.selectedOptions;
       this.displayOptions.sort(this.sortOptions());
+      this.preserveSelectedOptions();
+      this.onDisplayString();
     } else if (this.fieldFormControl.value) {
       this.selectedValue = this.fieldFormControl.value;
+      this.allSelectedValues = this.selectedOptions;
+      this.onDisplayString();
     }
   }
 
