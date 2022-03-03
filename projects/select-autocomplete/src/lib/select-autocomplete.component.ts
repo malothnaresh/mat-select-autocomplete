@@ -38,6 +38,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   @Input() appearance: 'standard' | 'fill' | 'outline' = 'standard';
   @Input() fieldLabel: string;
   @Input() fieldsSelectors: ElementsSelectors;
+  @Input() ElementWidth;
 
   @Output() selectionChange: EventEmitter<any> = new EventEmitter();
   @Output() onSearch: EventEmitter<any> = new EventEmitter();

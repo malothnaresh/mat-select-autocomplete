@@ -1,4 +1,4 @@
-<mat-form-field appearance="{{ appearance }}" class="select-autocomplete">
+<mat-form-field appearance="{{ appearance }}" class="select-autocomplete" [ngStyle]="{'width': ElementWidth ? ElementWidth : '100%' }">
   <mat-label *ngIf="fieldLabel">{{ fieldLabel }}</mat-label>
   <mat-select #selectElem id="{{ fieldsSelectors?.selectField }}" [attr.data-cy]="fieldsSelectors?.selectField"
     [disabled]="disabled" [multiple]="multiple" [placeholder]="placeholder" [formControl]="fieldFormControl"
