@@ -168,7 +168,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
       } else {
         // Single select display
         this.searchInput.displayOption = this.options.filter(
-          option => option[this.value] === this.selectedValue
+          option => option[this.value] == this.selectedValue
         );
         if (this.displayOptions.length) {
           this.displayString = this.displayOptions[0][this.display];
@@ -280,8 +280,8 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   preserveSelectedOptions(): void {
     this.displayOptions = this.displayOptions.filter(opt => this.allSelectedValues.includes(opt[this.value]));
     this.allSelectedValues.forEach(option => {
-      if (!this.displayOptions.find(opt => opt[this.value] === option)) {
-        this.displayOptions.push(this.options.find(opt => opt[this.value] === option));
+      if (!this.displayOptions.find(opt => opt[this.value] == option)) {
+        this.displayOptions.push(this.options.find(opt => opt[this.value] == option));
       }
     });
   }
