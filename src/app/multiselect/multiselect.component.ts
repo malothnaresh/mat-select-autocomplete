@@ -94,6 +94,9 @@ export class MultiselectComponent implements OnChanges {
   labelCount = 1;
   @Input()
   appearance = 'standard';
+  
+  @Input()
+  labelText = "";
 
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
@@ -179,6 +182,7 @@ export class MultiselectComponent implements OnChanges {
           if (this.selectedValue.length > 1) {
             this.displayString += ` (+${this.selectedValue.length - this.labelCount} others)`;
           }
+          
         }
       } else {
         // Single select display
@@ -190,7 +194,10 @@ export class MultiselectComponent implements OnChanges {
         }
       }
     }
-    return this.displayString;
+    if(this.labelText == "")
+      return this.displayString;
+    else
+      return this.displayOption.length + this.labelText;
   }
 
   onSelectionChange(val) {
