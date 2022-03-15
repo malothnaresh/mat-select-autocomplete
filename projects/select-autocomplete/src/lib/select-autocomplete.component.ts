@@ -62,8 +62,13 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   ngOnInit(): void {
     this.onSearch.emit('');
     this.options$.subscribe(res => {
+      this.allSelectedValues.forEach(option => {
+        if (!res.find(opt => opt[this.value] == option)) {
+          res.push(this.options.find(opt => opt[this.value] == option));
+        }
+      });
       this.originOptions = this.options = this.filteredOptions = res.sort(this.sortOptions());
-      if (!this.searchBy) { this.rearrangOptions(); }
+      if (!this.searchBy) { this.reArrangeOptions(); }
       this.checkIfAllSelected();
     });
   }
@@ -208,7 +213,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
       this.searchBy = undefined;
       this.onSearch.emit('');
     }
-    this.rearrangOptions();
+    this.reArrangeOptions();
   }
 
   keyUp(ev): void {
@@ -241,7 +246,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.selectionChange.emit(this.selectedValue);
   }
 
-  rearrangOptions(): void {
+  reArrangeOptions(): void {
     const selectedOptions = [];
     const unselectedOptions = [];
     this.originOptions.forEach(option => {
