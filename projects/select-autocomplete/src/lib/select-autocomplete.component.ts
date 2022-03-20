@@ -28,6 +28,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   @Input() options$;
   @Input() disabled = false;
   @Input() display = 'display';
+  @Input() extraDisplay?; // value before option text ex: [id-description]
   @Input() value = 'value';
   @Input() fieldFormControl: FormControl = new FormControl();
   @Input() errorMsg = 'Field is required';
@@ -67,7 +68,9 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
           res.push(this.options.find(opt => opt[this.value] == option));
         }
       });
-      this.originOptions = this.options = this.filteredOptions = res.sort(this.sortOptions());
+      const copyArray = [...res]
+      copyArray.sort(this.sortOptions());
+      this.originOptions = this.options = this.filteredOptions = copyArray;
       if (!this.searchBy) { this.reArrangeOptions(); }
       this.checkIfAllSelected();
     });
@@ -270,6 +273,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
   sortOptions() {
     return (a, b) => {
+      debugger;
       const nameA = a[this.display].toUpperCase();
       const nameB = b[this.display].toUpperCase();
       if (nameA < nameB) {
