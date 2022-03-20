@@ -25,7 +25,7 @@
     <mat-option *ngFor="let option of options; let i = index" [disabled]="option.disabled" [value]="option[value]"
       [style.display]="hideOption(option) ? 'none' : 'flex'" (onSelectionChange)="optionClicked($event)"
       [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i">
-      {{ option[display] }}
+      <ng-container *ngIf="option[extraDisplay]">{{option[extraDisplay]}}</ng-container> {{ option[display] }}
     </mat-option>
     <mat-option *ngIf="options && !options.length" [disabled]="true"> No results found. </mat-option>
     <mat-option
