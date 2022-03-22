@@ -65,7 +65,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.options$.subscribe(res => {
       this.allSelectedValues.forEach(option => {
         if (!res.find(opt => opt[this.value] == option)) {
-          res.push(this.options.find(opt => opt[this.value] == option));
+          res = [...res, this.options.find(opt => opt[this.value] == option)]
         }
       });
       const copyArray = [...res]
