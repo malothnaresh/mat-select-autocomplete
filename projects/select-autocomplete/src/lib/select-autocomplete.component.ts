@@ -48,7 +48,11 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   @ViewChild('searchInput', { static: false }) searchInput;
 
   options: Array<any> = [];
+  selectedOps: Array<any> = [];
   originOptions: Array<any> = [];
+
+
+  //to be reconsidered
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
   displayOptions: Array<string> = [];
@@ -57,6 +61,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   displayString = '';
   ctrlClicked = false;
   searchBy = 'initial';
+  selectedVal;
 
   constructor() { }
 
@@ -84,6 +89,15 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
       this.allSelectedValues = this.selectedOptions;
+      if (this.selectedVal && this.options.length) {
+       this.options = this.options.filter((obj) => {
+          if (obj.id === this.selectedVal.toString()) {
+            this.selectedOps.push(obj);
+          }
+          return obj.id !== this.selectedVal.toString();
+        })
+      }
+      console.log("The selected options", this.selectedOptions, this.options, this.selectedOps);
       this.displayOptions.sort(this.sortOptions());
       this.preserveSelectedOptions();
       this.onDisplayString();
@@ -116,10 +130,12 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   toggleDropdown(): void {
+    console.log("toggle Dropdown");
     this.selectElem.toggle();
   }
 
   toggleSelectAll(val): void {
+    console.log("toggle select all");
     if (val.checked) {
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
@@ -136,6 +152,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   filterItem(value): void {
+    console.log("filter item");
     this.searchBy = value;
     this.onSearch.emit(this.searchBy);
   }
@@ -146,6 +163,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
 
   // Returns plain strings array of filtered values
   getFilteredOptionsValues(): any {
+    console.log("get filtered option values");
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
       filteredValues.push(option[this.value]);
@@ -158,8 +176,8 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (this.allSelectedValues && this.allSelectedValues.length) {
       if (this.multiple) {
         // Multi select display
-        if (this.displayOptions.length) {
-          for (const option of this.displayOptions) {
+        if (this.selectedOps.length) {
+          for (const option of this.selectedOps) {
             if (option && option[this.display]) {
               this.displayString += option[this.display] + ', ';
             }
@@ -187,9 +205,17 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   optionClicked(v): void {
+    console.log("option clicked", v.source.value);
+    this.selectedVal = v.source.value;
     if (!v.source.selected && v.isUserInput) {
       const index = this.allSelectedValues.indexOf(v.source.value);
       this.allSelectedValues.splice(index, 1);
+
+      const index1 = this.selectedOps.indexOf(v.source.value);
+      this.selectedOps.splice(index1,1);
+      // this.options.push()
+      console.log("heyyy all selected value", this.allSelectedValues);
+
       // to be reviewd
       this.searchInput.nativeElement.value = '';
       this.onSearch.emit('');
@@ -197,6 +223,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   onSelectionChange(val): void {
+    console.log("on selection change >>>>>>", val.value, this.selectedValue);
     this.selectedValue = val.value;
     this.allSelectedValues.push(...this.selectedValue);
     this.allSelectedValues = [...new Set([...this.allSelectedValues])];
@@ -209,6 +236,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   setFocus(event): void {
+    console.log("set focus");
     if (event) {
       this.searchInput.nativeElement.focus();
     } else {
@@ -243,13 +271,21 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   clearSelection(): void {
+    console.log("selected options clear selected items",this.options);
+    this.options = this.options.concat(this.selectedOps);
+    this.selectedOps = [];
+    console.log("clear selected items",this.options);
+    // this.options = [...this.options, this.selectedOps];
     this.selectAllChecked = false;
     this.selectedValue = [];
     this.allSelectedValues = [];
     this.selectionChange.emit(this.selectedValue);
+    this.selectedOps = [];
   }
 
   reArrangeOptions(): void {
+    console.log("reArrange options", this.selectedOps, this.options);
+
     const selectedOptions = [];
     const unselectedOptions = [];
     this.originOptions.forEach(option => {
@@ -261,9 +297,10 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     });
 
     this.options = (this.selectedValue.length === 0) ? this.originOptions : [
-      ...selectedOptions,
       ...unselectedOptions
     ];
+    console.log("reArrange options>>", this.selectedOps);
+
   }
 
   checkIfAllSelected(): void {

@@ -27,6 +27,11 @@
       [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i">
       <ng-container *ngIf="option[extraDisplay]">{{option[extraDisplay]}}</ng-container> {{ option[display] }}
     </mat-option>
+    <mat-divider></mat-divider>
+    <mat-option id="lamis-options" class="selected-options" *ngFor="let option of selectedOps; let i = index" [value]="option[value]"
+      [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i" (onSelectionChange)="optionClicked($event)">
+      <ng-container *ngIf="option[extraDisplay]">{{option[extraDisplay]}}</ng-container> {{ option[display] }}
+    </mat-option>
     <mat-option *ngIf="options && !options.length" [disabled]="true"> No results found. </mat-option>
     <mat-option
       [disabled]="true"
