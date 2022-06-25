@@ -62,20 +62,25 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   ctrlClicked = false;
   searchBy = 'initial';
   selectedVal;
+  search = false;
 
   constructor() { }
 
   ngOnInit(): void {
     this.onSearch.emit('');
     this.options$.subscribe(res => {
-      this.allSelectedValues.forEach(option => {
-        if (!res.find(opt => opt[this.value] == option)) {
-          res = [...res, this.options.find(opt => opt[this.value] == option)]
-        }
-      });
-      const copyArray = [...res]
+      const copyArray = [...res];
       copyArray.sort(this.sortOptions());
-      this.originOptions = this.options = this.filteredOptions = copyArray;
+      this.originOptions = this.filteredOptions = copyArray;
+      if (this.search) {
+        let notSelectedOptions = [];
+        this.originOptions.forEach(option => {
+          if (!this.selectedValue.includes(option[this.value])) {
+            notSelectedOptions.push(option);
+          }
+        });
+        this.options = notSelectedOptions;
+      }
       if (!this.searchBy) { this.reArrangeOptions(); }
       this.checkIfAllSelected();
     });
@@ -89,23 +94,24 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
       this.allSelectedValues = this.selectedOptions;
-      if (this.selectedVal && this.options.length) {
-       this.options = this.options.filter((obj) => {
+      if (this.selectedVal) {
+        this.options = this.options?.filter((obj) => {
           if (obj.id === this.selectedVal.toString()) {
             this.selectedOps.push(obj);
           }
           return obj.id !== this.selectedVal.toString();
         })
       }
-      console.log("The selected options", this.selectedOptions, this.options, this.selectedOps);
       this.displayOptions.sort(this.sortOptions());
       this.preserveSelectedOptions();
       this.onDisplayString();
+
     } else if (this.fieldFormControl.value) {
       this.selectedValue = this.fieldFormControl.value;
       this.allSelectedValues = this.selectedOptions;
       this.onDisplayString();
     }
+    this.selectedVal = null;
   }
 
   ngAfterViewInit(): void {
@@ -129,30 +135,41 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     }
   }
 
+
+  //not used
   toggleDropdown(): void {
-    console.log("toggle Dropdown");
     this.selectElem.toggle();
   }
 
   toggleSelectAll(val): void {
-    console.log("toggle select all");
     if (val.checked) {
       this.filteredOptions.forEach(option => {
         if (!this.selectedValue.includes(option[this.value])) {
           this.selectedValue = this.selectedValue.concat([option[this.value]]);
           this.allSelectedValues = this.selectedValue;
+          // console.log("heyyyyyy", this.selectedOps, this.originOptions, this.selectedValue);
+          // this.selectedOps = [...new Set(this.selectedOps.concat(this.originOptions))];
+          if(this.search) {
+            this.selectedOps = [...new Set([...this.selectedOps, ...this.originOptions])];
+          }
+          else {
+            this.selectedOps = this.originOptions;
+          }
+          this.options = [];
         }
       });
     } else {
       const filteredValues = this.getFilteredOptionsValues();
       this.selectedValue = this.selectedValue.filter(item => !filteredValues.includes(item));
       this.allSelectedValues = this.selectedValue;
+      this.options = this.originOptions;
+      this.selectedOps = [];
+      this.selectedVal = null;
     }
     this.selectionChange.emit(this.selectedValue);
   }
 
   filterItem(value): void {
-    console.log("filter item");
     this.searchBy = value;
     this.onSearch.emit(this.searchBy);
   }
@@ -163,7 +180,6 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
 
   // Returns plain strings array of filtered values
   getFilteredOptionsValues(): any {
-    console.log("get filtered option values");
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
       filteredValues.push(option[this.value]);
@@ -193,7 +209,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         }
       } else {
         // Single select display
-        this.searchInput.displayOption = this.options.filter(
+        this.searchInput.displayOption = this.originOptions.filter(
           option => option[this.value] == this.selectedValue
         );
         if (this.displayOptions.length) {
@@ -205,17 +221,13 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   optionClicked(v): void {
-    console.log("option clicked", v.source.value);
+    console.log("on selection change");
+
     this.selectedVal = v.source.value;
     if (!v.source.selected && v.isUserInput) {
       const index = this.allSelectedValues.indexOf(v.source.value);
       this.allSelectedValues.splice(index, 1);
-
-      const index1 = this.selectedOps.indexOf(v.source.value);
-      this.selectedOps.splice(index1,1);
-      // this.options.push()
-      console.log("heyyy all selected value", this.allSelectedValues);
-
+      this.selectedOps.splice(index, 1);
       // to be reviewd
       this.searchInput.nativeElement.value = '';
       this.onSearch.emit('');
@@ -223,7 +235,6 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   onSelectionChange(val): void {
-    console.log("on selection change >>>>>>", val.value, this.selectedValue);
     this.selectedValue = val.value;
     this.allSelectedValues.push(...this.selectedValue);
     this.allSelectedValues = [...new Set([...this.allSelectedValues])];
@@ -236,7 +247,6 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   setFocus(event): void {
-    console.log("set focus");
     if (event) {
       this.searchInput.nativeElement.focus();
     } else {
@@ -252,6 +262,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
       this.ctrlClicked = false;
     }
   }
+
   keyDown(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = true;
@@ -264,28 +275,41 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (ev.code === 'Space') {
       ev.stopPropagation();
     }
+    if (ev.keyCode == 13) {
+      if (this.selectElem.options.first.selected) {
+        ev.cancelBubble = true;
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+      }
+      else {
+        this.selectElem.options.first.select();
+      }
+    }
   }
 
-  chooseFirstOption(): void {
-    this.selectElem.options.first.select();
+  chooseFirstOption(ev): void {
+    // debugger;
+    // if (this.selectElem.options.first.selected) {
+    //   ev.cancelBubble = true;
+    //   ev.preventDefault();
+    //   ev.stopImmediatePropagation();
+    // }
+    // else {
+    //   this.selectElem.options.first.select();
+    // }
   }
 
   clearSelection(): void {
-    console.log("selected options clear selected items",this.options);
-    this.options = this.options.concat(this.selectedOps);
-    this.selectedOps = [];
-    console.log("clear selected items",this.options);
-    // this.options = [...this.options, this.selectedOps];
+    this.options = this.originOptions;
     this.selectAllChecked = false;
     this.selectedValue = [];
     this.allSelectedValues = [];
-    this.selectionChange.emit(this.selectedValue);
     this.selectedOps = [];
+    this.selectedVal = null;
+    this.selectionChange.emit(this.selectedValue);
   }
 
   reArrangeOptions(): void {
-    console.log("reArrange options", this.selectedOps, this.options);
-
     const selectedOptions = [];
     const unselectedOptions = [];
     this.originOptions.forEach(option => {
@@ -295,12 +319,9 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         unselectedOptions.push(option);
       }
     });
-
     this.options = (this.selectedValue.length === 0) ? this.originOptions : [
       ...unselectedOptions
     ];
-    console.log("reArrange options>>", this.selectedOps);
-
   }
 
   checkIfAllSelected(): void {
@@ -326,7 +347,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.displayOptions = this.displayOptions.filter(opt => this.allSelectedValues.includes(opt[this.value]));
     this.allSelectedValues.forEach(option => {
       if (!this.displayOptions.find(opt => opt[this.value] == option)) {
-        this.displayOptions.push(this.options.find(opt => opt[this.value] == option));
+        this.displayOptions.push(this.originOptions.find(opt => opt[this.value] == option));
       }
     });
   }
