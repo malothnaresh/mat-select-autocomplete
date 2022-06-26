@@ -102,6 +102,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
           return obj.id !== this.selectedVal.toString();
         })
       }
+      this.selectedOps.sort(this.sortOptions());
       this.displayOptions.sort(this.sortOptions());
       this.preserveSelectedOptions();
       this.onDisplayString();
@@ -147,8 +148,6 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         if (!this.selectedValue.includes(option[this.value])) {
           this.selectedValue = this.selectedValue.concat([option[this.value]]);
           this.allSelectedValues = this.selectedValue;
-          // console.log("heyyyyyy", this.selectedOps, this.originOptions, this.selectedValue);
-          // this.selectedOps = [...new Set(this.selectedOps.concat(this.originOptions))];
           if(this.search) {
             this.selectedOps = [...new Set([...this.selectedOps, ...this.originOptions])];
           }
@@ -221,13 +220,13 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   optionClicked(v): void {
-    console.log("on selection change");
-
     this.selectedVal = v.source.value;
     if (!v.source.selected && v.isUserInput) {
       const index = this.allSelectedValues.indexOf(v.source.value);
       this.allSelectedValues.splice(index, 1);
-      this.selectedOps.splice(index, 1);
+      this.selectedOps =  this.selectedOps.filter(option => {
+        return option.id !== v.source.value;
+      })
       // to be reviewd
       this.searchInput.nativeElement.value = '';
       this.onSearch.emit('');
@@ -285,18 +284,6 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         this.selectElem.options.first.select();
       }
     }
-  }
-
-  chooseFirstOption(ev): void {
-    // debugger;
-    // if (this.selectElem.options.first.selected) {
-    //   ev.cancelBubble = true;
-    //   ev.preventDefault();
-    //   ev.stopImmediatePropagation();
-    // }
-    // else {
-    //   this.selectElem.options.first.select();
-    // }
   }
 
   clearSelection(): void {

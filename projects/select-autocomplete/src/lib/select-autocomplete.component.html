@@ -11,7 +11,7 @@
         </mat-checkbox>
         <input #searchInput id="{{ fieldsSelectors?.inputField }}" [attr.data-cy]="fieldsSelectors?.searchField"
           type="text" [ngClass]="{ 'pl-1': !multiple }" (input)="filterItem(searchInput.value)"
-          (keydown)="keyDown($event); this.search = true" (keyup)="keyUp($event)" (keyup.enter)="chooseFirstOption($event); searchInput.value = ''; filterItem(''); this.search = false;"
+          (keydown)="keyDown($event); this.search = true" (keyup)="keyUp($event)" (keyup.enter)="searchInput.value = ''; filterItem(''); this.search = false;"
           placeholder="Search..." />
         <div class="box-search-icon" (click)="filterItem(''); searchInput.value = ''">
           <button mat-icon-button class="search-button">
@@ -30,8 +30,8 @@
         <ng-container *ngIf="option[extraDisplay]">{{option[extraDisplay]}}</ng-container> {{ option[display] }}
       </mat-option>
     </div>
-      <mat-divider></mat-divider>
-      <div class="selected-options-container">
+      <mat-divider *ngIf="selectedOps.length && options.length"></mat-divider>
+      <div class="options-container">
       <mat-option class="selected-options" *ngFor="let selectedOption of selectedOps; let i = index"
         [value]="selectedOption[value]" [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i"
         (onSelectionChange)="optionClicked($event);" (click)="searchInput.value = ''; filterItem(''); this.search = false;">
@@ -42,7 +42,7 @@
       <mat-option *ngIf="options && !options.length && !selectedOps.length" [disabled]="true"> No results found.
       </mat-option>
       <mat-option [disabled]="true" class="clear-selection" (click)="clearSelection()"
-        id="{{ fieldsSelectors?.clearSelection }}" *ngIf="selectedValue?.length && options?.length">
+        id="{{ fieldsSelectors?.clearSelection }}" *ngIf="selectedOps?.length">
         <div>
           <mat-divider></mat-divider>
           <span [attr.data-cy]="fieldsSelectors?.clearSelection">Clear selected items</span>
