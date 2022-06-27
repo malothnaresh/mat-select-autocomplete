@@ -48,7 +48,11 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   @ViewChild('searchInput', { static: false }) searchInput;
 
   options: Array<any> = [];
+  selectedOps: Array<any> = [];
   originOptions: Array<any> = [];
+
+
+  //to be reconsidered
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
   displayOptions: Array<string> = [];
@@ -57,20 +61,26 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   displayString = '';
   ctrlClicked = false;
   searchBy = 'initial';
+  selectedVal;
+  search = false;
 
   constructor() { }
 
   ngOnInit(): void {
     this.onSearch.emit('');
     this.options$.subscribe(res => {
-      this.allSelectedValues.forEach(option => {
-        if (!res.find(opt => opt[this.value] == option)) {
-          res = [...res, this.options.find(opt => opt[this.value] == option)]
-        }
-      });
-      const copyArray = [...res]
+      const copyArray = [...res];
       copyArray.sort(this.sortOptions());
-      this.originOptions = this.options = this.filteredOptions = copyArray;
+      this.originOptions = this.filteredOptions = copyArray;
+      if (this.search) {
+        let notSelectedOptions = [];
+        this.originOptions.forEach(option => {
+          if (!this.selectedValue.includes(option[this.value])) {
+            notSelectedOptions.push(option);
+          }
+        });
+        this.options = notSelectedOptions;
+      }
       if (!this.searchBy) { this.reArrangeOptions(); }
       this.checkIfAllSelected();
     });
@@ -84,14 +94,25 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
       this.allSelectedValues = this.selectedOptions;
+      if (this.selectedVal) {
+        this.options = this.options?.filter((obj) => {
+          if (obj.id === this.selectedVal.toString()) {
+            this.selectedOps.push(obj);
+          }
+          return obj.id !== this.selectedVal.toString();
+        })
+      }
+      this.selectedOps.sort(this.sortOptions());
       this.displayOptions.sort(this.sortOptions());
       this.preserveSelectedOptions();
       this.onDisplayString();
+
     } else if (this.fieldFormControl.value) {
       this.selectedValue = this.fieldFormControl.value;
       this.allSelectedValues = this.selectedOptions;
       this.onDisplayString();
     }
+    this.selectedVal = null;
   }
 
   ngAfterViewInit(): void {
@@ -115,6 +136,8 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     }
   }
 
+
+  //not used
   toggleDropdown(): void {
     this.selectElem.toggle();
   }
@@ -125,12 +148,22 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         if (!this.selectedValue.includes(option[this.value])) {
           this.selectedValue = this.selectedValue.concat([option[this.value]]);
           this.allSelectedValues = this.selectedValue;
+          if(this.search) {
+            this.selectedOps = [...new Set([...this.selectedOps, ...this.originOptions])];
+          }
+          else {
+            this.selectedOps = this.originOptions;
+          }
+          this.options = [];
         }
       });
     } else {
       const filteredValues = this.getFilteredOptionsValues();
       this.selectedValue = this.selectedValue.filter(item => !filteredValues.includes(item));
       this.allSelectedValues = this.selectedValue;
+      this.options = this.originOptions;
+      this.selectedOps = [];
+      this.selectedVal = null;
     }
     this.selectionChange.emit(this.selectedValue);
   }
@@ -158,8 +191,8 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (this.allSelectedValues && this.allSelectedValues.length) {
       if (this.multiple) {
         // Multi select display
-        if (this.displayOptions.length) {
-          for (const option of this.displayOptions) {
+        if (this.selectedOps.length) {
+          for (const option of this.selectedOps) {
             if (option && option[this.display]) {
               this.displayString += option[this.display] + ', ';
             }
@@ -175,7 +208,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         }
       } else {
         // Single select display
-        this.searchInput.displayOption = this.options.filter(
+        this.searchInput.displayOption = this.originOptions.filter(
           option => option[this.value] == this.selectedValue
         );
         if (this.displayOptions.length) {
@@ -187,9 +220,13 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
   }
 
   optionClicked(v): void {
+    this.selectedVal = v.source.value;
     if (!v.source.selected && v.isUserInput) {
       const index = this.allSelectedValues.indexOf(v.source.value);
       this.allSelectedValues.splice(index, 1);
+      this.selectedOps =  this.selectedOps.filter(option => {
+        return option.id !== v.source.value;
+      })
       // to be reviewd
       this.searchInput.nativeElement.value = '';
       this.onSearch.emit('');
@@ -224,6 +261,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
       this.ctrlClicked = false;
     }
   }
+
   keyDown(ev): void {
     if (ev.keyCode === 17) {
       this.ctrlClicked = true;
@@ -236,16 +274,25 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     if (ev.code === 'Space') {
       ev.stopPropagation();
     }
-  }
-
-  chooseFirstOption(): void {
-    this.selectElem.options.first.select();
+    if (ev.keyCode == 13) {
+      if (this.selectElem.options.first.selected) {
+        ev.cancelBubble = true;
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+      }
+      else {
+        this.selectElem.options.first.select();
+      }
+    }
   }
 
   clearSelection(): void {
+    this.options = this.originOptions;
     this.selectAllChecked = false;
     this.selectedValue = [];
     this.allSelectedValues = [];
+    this.selectedOps = [];
+    this.selectedVal = null;
     this.selectionChange.emit(this.selectedValue);
   }
 
@@ -259,9 +306,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
         unselectedOptions.push(option);
       }
     });
-
     this.options = (this.selectedValue.length === 0) ? this.originOptions : [
-      ...selectedOptions,
       ...unselectedOptions
     ];
   }
@@ -289,7 +334,7 @@ export class SelectAutocompleteComponent implements OnInit, OnChanges, AfterView
     this.displayOptions = this.displayOptions.filter(opt => this.allSelectedValues.includes(opt[this.value]));
     this.allSelectedValues.forEach(option => {
       if (!this.displayOptions.find(opt => opt[this.value] == option)) {
-        this.displayOptions.push(this.options.find(opt => opt[this.value] == option));
+        this.displayOptions.push(this.originOptions.find(opt => opt[this.value] == option));
       }
     });
   }
