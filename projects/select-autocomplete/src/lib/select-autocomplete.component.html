@@ -26,14 +26,14 @@
     <div class="options-container">
       <mat-option *ngFor="let option of options; let i = index" [disabled]="option.disabled" [value]="option[value]"
         [style.display]="flex" (onSelectionChange)="optionClicked($event);"
-        [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i" (click)="searchInput.value = ''; filterItem(''); this.search = false;">
+        [attr.data-cy]="fieldsSelectors?.selectField + '-unselected-option-' + i" (click)="searchInput.value = ''; filterItem(''); this.search = false;">
         <ng-container *ngIf="option[extraDisplay]">{{option[extraDisplay]}}</ng-container> {{ option[display] }}
       </mat-option>
     </div>
       <mat-divider *ngIf="selectedOps.length && options.length"></mat-divider>
       <div class="options-container">
       <mat-option class="selected-options" *ngFor="let selectedOption of selectedOps; let i = index"
-        [value]="selectedOption[value]" [attr.data-cy]="fieldsSelectors?.selectField + '-option-' + i"
+        [value]="selectedOption[value]" [attr.data-cy]="fieldsSelectors?.selectField + '-selected-option-' + i"
         (onSelectionChange)="optionClicked($event);" (click)="searchInput.value = ''; filterItem(''); this.search = false;">
         <ng-container *ngIf="selectedOption[extraDisplay]">{{selectedOption[extraDisplay]}}</ng-container> {{
         selectedOption[display] }}
